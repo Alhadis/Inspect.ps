@@ -44,6 +44,12 @@
 		} ifelse
 	}
 	/booleantype {13 p}
+	/devicetype {
+		(Device ) 11 p
+		/indent? false def
+		dup getdeviceprops .dicttomark call
+		/break? false def
+	}
 	/dicttype {
 		dup refs exch known {
 			(Circular Reference ) 6 p
