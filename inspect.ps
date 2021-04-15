@@ -128,10 +128,12 @@
 	/realtype {3 p}
 	/savetype {pop (VM Snapshot) 11 p}
 	/stringtype {dup rcheck {(\() 14 p 14 p (\)) 14 p} {0 priv} ifelse}
+	/unknowntype {(Unknown object: ) 9 p 9 p}
 	/call {
 		Inspect begin
 		indent
-		dup type exec
+		dup type dup
+		Inspect exch known {exec} {unknowntype} ifelse
 		break? {nl} if
 		depth 0 eq {reset} if
 		end
