@@ -9,7 +9,7 @@
 	/depth++ {/depth depth 1 add def}
 	/depth-- {/depth depth 1 sub def}
 	/indent  {indent? {depth {(\t) print} repeat} {/indent? true def} ifelse}
-	/priv    {0 eq {(-private-)} {( --private-- )} ifelse 8 p pop}
+	/priv    {0 eq {(-private-)} {( --private-- )} ifelse 8 p}
 	/nl      {(\n) print}
 	/saveref {dup refs exch refs length put}
 	/p {
