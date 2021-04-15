@@ -83,8 +83,18 @@
 	/filetype {
 		(File ) 11 p
 		dup status not {((invalid) ) 11 p} if
-		(@ ) 11 p dup fileposition dup 11 p
-		(/)  11 p exch bytesavailable add 11 p
+		mark exch {
+			dup fileposition
+			dup 3 -1 roll
+			bytesavailable add
+			exch
+		} stopped {
+			((not positionable)) 11 p
+		} {
+			(@ ) 11 p 11 p
+			(/)  11 p 11 p
+		} ifelse
+		cleartomark
 	}
 	/fonttype {pop (FontID) 11 p}
 	/gstatetype {
