@@ -132,8 +132,10 @@
 	/call {
 		Inspect begin
 		indent
+		attr? {/.attr exch def} if
 		dup type dup
 		Inspect exch known {exec} {unknowntype} ifelse
+		attr? {attr} if
 		break? {nl} if
 		depth 0 eq {reset} if
 		end
@@ -144,6 +146,28 @@
 		/indent? true def
 		/depth   0    def
 		/buffer  1024 string def
+	} bind
+	
+	% Section: Object attributes (WIP)
+	/.attr null def
+	/attr? false def
+	/attr {
+		( <@ ) 8 p
+		<< /_ exch >> begin clear
+		/g {_ gcheck} bind def
+		/x {_ gcheck} bind def
+		/r {{_ rcheck} stopped {null} if} bind def
+		/w {{_ wcheck} stopped {null} if} bind def
+		/on  {true eq} def
+		/off {true ne} def
+		g {(vm:global)} {(vm:local)} ifelse 8 p
+		x off r off and w off and {( access:none)            8 p} if
+		x on  r on  and w on  and {( access:full)            8 p} if
+		x on  r on  and w off and {( access:full,unwritable) 8 p} if
+		x on  r off and w off and {( access:execute-only)    8 p} if
+		x off r on  and w off and {( access:read-only)       8 p} if
+		x off r off and w on  and {( access:write-only)      8 p} if
+		end ( @>) 8 p
 	} bind
 >> def
 
