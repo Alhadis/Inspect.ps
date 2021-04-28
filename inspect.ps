@@ -1,17 +1,19 @@
 %!PS
 
+currentpacking true setpacking
+
 /Inspect <<
 	/refs    <<>>
 	/buffer  1024 string
 	/break?  true
 	/indent? true
 	/depth   0
-	/depth++ {/depth depth 1 add def}
-	/depth-- {/depth depth 1 sub def}
-	/indent  {indent? {depth {(\t) print} repeat} {/indent? true def} ifelse}
-	/priv    {0 eq {(-private-)} {( --private-- )} ifelse 8 p}
-	/nl      {(\n) print}
-	/saveref {dup refs exch refs length put}
+	/depth++ {/depth depth 1 add def} bind
+	/depth-- {/depth depth 1 sub def} bind
+	/indent  {indent? {depth {(\t) print} repeat} {/indent? true def} ifelse} bind
+	/priv    {0 eq {(-private-)} {( --private-- )} ifelse 8 print} bind
+	/nl      {(\n) print} bind
+	/saveref {dup refs exch refs length put} bind
 	/p {
 		(\033[38;5;) print
 		buffer cvs print
@@ -19,7 +21,7 @@
 		dup type /stringtype ne {buffer cvs} if
 		print
 		(\033[0m) print
-	}
+	} bind
 	/arraytype {
 		dup refs exch known {
 			(Circular Reference ) 6 p
@@ -42,14 +44,14 @@
 			xcheck {(})} {(])} ifelse 8 p
 			/break? exch def
 		} ifelse
-	}
-	/booleantype {13 p}
+	} bind
+	/booleantype {13 p} bind
 	/devicetype {
 		(Device ) 11 p
 		/indent? false def
 		dup getdeviceprops .dicttomark call
 		/break? false def
-	}
+	} bind
 	/dicttype {
 		dup refs exch known {
 			(Circular Reference ) 6 p
@@ -79,7 +81,7 @@
 			(>>) 9 p
 			/break? exch def
 		} ifelse
-	}
+	} bind
 	/filetype {
 		(File ) 11 p
 		dup status not {((invalid) ) 11 p} if
@@ -96,8 +98,8 @@
 			(/)  11 p 11 p
 		} ifelse
 		cleartomark
-	}
-	/fonttype {pop (FontID) 11 p}
+	} bind
+	/fonttype {pop (FontID) 11 p} bind
 	/gstatetype {
 		(Graphics State ) 11 p
 		gsave setgstate
@@ -118,17 +120,17 @@
 		>> call
 		/break? false def
 		grestore
-	}
-	/integertype {3 p}
-	/marktype {pop (Mark) 9 p}
-	/nametype {dup xcheck not {(/) 10 p} if 10 p}
-	/nulltype {pop (null) 6 p}
-	/operatortype {9 p}
-	/packedarraytype {(#) 8 p arraytype}
-	/realtype {3 p}
-	/savetype {pop (VM Snapshot) 11 p}
-	/stringtype {dup rcheck {(\() 14 p 14 p (\)) 14 p} {0 priv} ifelse}
-	/unknowntype {(Unknown object: ) 9 p 9 p}
+	} bind
+	/integertype {3 p} bind
+	/marktype {pop (Mark) 9 p} bind
+	/nametype {dup xcheck not {(/) 10 p} if 10 p} bind
+	/nulltype {pop (null) 6 p} bind
+	/operatortype {9 p} bind
+	/packedarraytype {(#) 8 p arraytype} bind
+	/realtype {3 p} bind
+	/savetype {pop (VM Snapshot) 11 p} bind
+	/stringtype {dup rcheck {(\() 14 p 14 p (\)) 14 p} {0 priv} ifelse} bind
+	/unknowntype {(Unknown object: ) 9 p 9 p} bind
 	/call {
 		Inspect begin
 		indent
@@ -183,3 +185,5 @@
 	[exch aload pop 2 1 counttomark 2 sub {-1 roll} for]
 	Inspect /call get forall aload pop
 } bind def
+
+setpacking
