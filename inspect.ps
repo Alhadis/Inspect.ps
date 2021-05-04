@@ -67,9 +67,10 @@ currentpacking true setpacking
 	/booleantype {13 p} bind
 	/devicetype {
 		(Device ) 11 p
+		/break?  false def
 		/indent? false def
-		dup getdeviceprops .dicttomark call
-		/break? false def
+		getdeviceprops .dicttomark call
+		/break? true def
 	} bind
 	/dicttype {
 		dup refs exch known {
@@ -122,6 +123,7 @@ currentpacking true setpacking
 	/gstatetype {
 		(Graphics State ) 11 p
 		gsave setgstate
+		/break?  false def
 		/indent? false def
 		<<
 			/LineWidth     currentlinewidth
@@ -137,7 +139,7 @@ currentpacking true setpacking
 			/RGB           [currentrgbcolor]
 			/CMYK          [currentcmykcolor]
 		>> call
-		/break? false def
+		/break? true def
 		grestore
 	} bind
 	/integertype {3 p} bind
