@@ -11,9 +11,28 @@ currentpacking true setpacking
 	/depth++ {/depth depth 1 add def} bind
 	/depth-- {/depth depth 1 sub def} bind
 	/indent  {indent? {depth {(\t) print} repeat} {/indent? true def} ifelse} bind
-	/priv    {0 eq {(-private-)} {( --private-- )} ifelse 8 print} bind
+	/priv    {0 eq {(-private-)} {( --private-- )} ifelse 8 p} bind
 	/nl      {(\n) print} bind
 	/saveref {dup refs exch refs length put} bind
+	/escape? true
+	/char {
+		dup
+		1 string dup 3 -1 roll
+		0 exch put exch dup <<
+			8  (\\b) 13 (\\r) 12 (\\f) 40 (\\\() 41 (\\\)) 92 (\\\\)
+			9  {escape? {(\\t)} {(\t)}  ifelse} bind
+			10 {escape? {(\\n)} {nl ()} ifelse} bind
+		>> dup 3 1 roll exch known
+			{exch get dup xcheck {exec} if 24 p pop}
+			{pop dup 32 ge exch dup 126 le 3 -1 roll and not
+				{(\\) 24 p 8 3 string cvrs
+					dup length 3 lt {0 24 p} if
+					dup length 2 lt {0 24 p} if
+					24 p pop}
+				{pop 14 p}
+			ifelse}
+		ifelse
+	} bind
 	/p {
 		(\033[38;5;) print
 		buffer cvs print
@@ -129,7 +148,7 @@ currentpacking true setpacking
 	/packedarraytype {(#) 8 p arraytype} bind
 	/realtype {3 p} bind
 	/savetype {pop (VM Snapshot) 11 p} bind
-	/stringtype {dup rcheck {(\() 14 p 14 p (\)) 14 p} {0 priv} ifelse} bind
+	/stringtype {(\() 14 p dup rcheck {{char} forall} {0 priv} ifelse (\)) 14 p} bind
 	/unknowntype {(Unknown object: ) 9 p 9 p} bind
 	/call {
 		Inspect begin
