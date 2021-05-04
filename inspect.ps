@@ -151,7 +151,7 @@ currentpacking true setpacking
 	/realtype {3 p} bind
 	/savetype {pop (VM Snapshot) 11 p} bind
 	/stringtype {(\() 14 p dup rcheck {{char} forall} {0 priv} ifelse (\)) 14 p} bind
-	/unknowntype {(Unknown object: ) 9 p 9 p} bind
+	/unknowntype {(Unknown object: ) 9 p 9 p pop} bind
 	/call {
 		Inspect begin
 		indent
