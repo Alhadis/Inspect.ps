@@ -202,9 +202,10 @@ currentpacking true setpacking
 } bind def
 
 /? {
-	count array astore dup
-	[exch aload pop 2 1 counttomark 2 sub {-1 roll} for]
-	Inspect /call get forall aload pop
+	0 1 count 3 sub {
+		index
+		Inspect /call get exec
+	} for
 } bind def
 
 setpacking
