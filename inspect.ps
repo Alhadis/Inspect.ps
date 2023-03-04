@@ -144,7 +144,20 @@ currentpacking true setpacking
 	} bind
 	/integertype {3 p} bind
 	/marktype {pop (Mark) 9 p} bind
-	/nametype {dup xcheck not {(/) 10 p} if 10 p} bind
+	/nametype {
+		dup 1024 string cvs
+		dup false exch {
+			dup 32 le exch 126 gt or {not exit} if
+		} forall {
+			stringtype ( ) print
+			systemdict /cvn get operatortype
+			xcheck {( ) print systemdict /cvx get operatortype} if
+		} {
+			pop
+			dup xcheck not {(/) 10 p} if
+			10 p
+		} ifelse
+	} bind
 	/nulltype {pop (null) 6 p} bind
 	/operatortype {9 p} bind
 	/packedarraytype {(#) 8 p arraytype} bind
