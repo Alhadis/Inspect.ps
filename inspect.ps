@@ -150,7 +150,7 @@ currentpacking true setpacking
 	/packedarraytype {(#) 8 p arraytype} bind
 	/realtype {3 p} bind
 	/savetype {pop (VM Snapshot) 11 p} bind
-	/stringtype {(\() 14 p dup rcheck {{char} forall} {0 priv} ifelse (\)) 14 p} bind
+	/stringtype {(\() 14 p dup rcheck {{char} forall} {pop 0 priv} ifelse (\)) 14 p} bind
 	/unknowntype {(Unknown object: ) 9 p 9 p attr? {pop} {attr} ifelse} bind
 	/call {
 		Inspect begin
