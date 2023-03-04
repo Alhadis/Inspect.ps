@@ -155,10 +155,9 @@ currentpacking true setpacking
 	/call {
 		Inspect begin
 		indent
-		attr? {/.attr exch def} if
-		dup type dup
+		dup dup type dup
 		Inspect exch known {exec} {unknowntype} ifelse
-		attr? {attr} if
+		attr? {attr} {pop} ifelse
 		break? {nl} if
 		depth 0 eq {reset} if
 		end
@@ -171,26 +170,25 @@ currentpacking true setpacking
 		/buffer  1024 string def
 	} bind
 	
-	% Section: Object attributes (WIP)
-	/.attr null def
-	/attr? false def
+	% Section: Object attributes
+	/attr? false
 	/attr {
-		( %{) 8 p
-		<< /_ 3 -1 roll >> begin
-		/g {_ gcheck} bind def
-		/x {_ gcheck} bind def
-		/r {{_ rcheck} stopped {null} if} bind def
-		/w {{_ wcheck} stopped {null} if} bind def
-		/on  {true eq} def
-		/off {true ne} def
-		g {(global)} {(local)} ifelse 8 p
+		( %{) 8 p <<
+			/_ 3 -1 roll
+			/r {/_ load {rcheck} stopped {pop false} if} bind
+			/w {/_ load {wcheck} stopped {pop false} if} bind
+			/x {/_ load xcheck} bind
+			/on  {true eq} bind
+			/off {true ne} bind
+		>> begin
+		/_ load gcheck {(global)} {(local)} ifelse 8 p
 		x off r off and w off and {(, no access)               8 p} if
 		x on  r on  and w on  and {(, full-access, writable)   8 p} if
 		x on  r on  and w off and {(, full-access, unwritable) 8 p} if
 		x on  r off and w off and {(, execute-only)            8 p} if
 		x off r on  and w off and {(, read-only)               8 p} if
 		x off r off and w on  and {(, write-only)              8 p} if
-		end (}% ) 8 p
+		end (}%) 8 p
 	} bind
 >> def
 
