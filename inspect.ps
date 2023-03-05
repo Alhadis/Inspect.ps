@@ -18,11 +18,7 @@ currentpacking true setpacking
 	% Section: Reference tracking
 	/refs <<>>
 	/ref {
-		(Reference to ) 6 p
-		dup type dup /dicttype eq
-			{pop (dictionary)}
-			{16 string cvs dup length 0 exch 4 sub getinterval}
-		ifelse 6 p
+		(Reference to ) 6 p typename 6 p
 		refs exch get
 		dup 0 lt {( key)} {( value)} ifelse 6 p
 		( on line ) 6 p
@@ -61,24 +57,35 @@ currentpacking true setpacking
 		print
 		(\033[0m) print
 	} bind
+
+	% Section: Type-handling
+	/typename {
+		dup type <<
+			/dicttype        (dictionary)
+			/gstatetype      (graphics state)
+			/packedarraytype (packed array)
+			/savetype        (VM snapshot)
+		>> begin
+			dup currentdict exch known {exec} {
+				24 string cvs dup length 0 exch 4 sub getinterval
+			} ifelse
+		end
+	} bind
 	/arraytype {
-		dup refs exch known {ref} {
-			saveref
-			break? exch
-			/break? true def
-			dup xcheck {({)} {([)} ifelse 8 p
-			dup rcheck {
-				dup length 0 gt {
-					nl dup
-					depth++
-					{call} forall
-					depth--
-					indent
-				} if
-			} {1 priv} ifelse
-			xcheck {(})} {(])} ifelse 8 p
-			/break? exch def
-		} ifelse
+		break? exch
+		/break? true def
+		dup xcheck {({)} {([)} ifelse 8 p
+		dup rcheck {
+			dup length 0 gt {
+				nl dup
+				depth++
+				{call} forall
+				depth--
+				indent
+			} if
+		} {1 priv} ifelse
+		xcheck {(})} {(])} ifelse 8 p
+		/break? exch def
 	} bind
 	/booleantype {13 p} bind
 	/devicetype {
@@ -89,30 +96,27 @@ currentpacking true setpacking
 		/break? true def
 	} bind
 	/dicttype {
-		dup refs exch known {ref} {
-			saveref
-			break? exch
-			(<<) 9 p
-			dup rcheck {
-				dup length 0 gt {
-					dup nl
-					depth++
-					{
-						exch
-						/break? false def
-						call
-						/break? true def
-						( => ) 8 p
-						/indent? false def
-						call
-					} forall
-					depth--
-					indent
-				} if pop
-			} {1 priv pop} ifelse
-			(>>) 9 p
-			/break? exch def
-		} ifelse
+		break? exch
+		(<<) 9 p
+		dup rcheck {
+			dup length 0 gt {
+				dup nl
+				depth++
+				{
+					exch
+					/break? false def
+					call
+					/break? true def
+					( => ) 8 p
+					/indent? false def
+					call
+				} forall
+				depth--
+				indent
+			} if pop
+		} {1 priv pop} ifelse
+		(>>) 9 p
+		/break? exch def
 	} bind
 	/filetype {
 		(File ) 11 p
@@ -229,5 +233,15 @@ currentpacking true setpacking
 		Inspect /call get exec
 	} for
 } bind def
+
+<< % Track references for the following object types:
+[/arraytype /dicttype /gstatetype /savetype]
+{dup Inspect 3 -1 roll get} forall >> {
+	{dup Inspect /refs get exch known {ref}} bind
+	dup length 2 add array 3 -1 roll exch count 2 roll aload pop
+	[/saveref cvx count -1 roll aload pop] cvx /ifelse load
+	count -1 roll astore cvx
+	Inspect 3 1 roll put
+} forall
 
 setpacking
