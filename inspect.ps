@@ -3,18 +3,38 @@
 currentpacking true setpacking
 
 /Inspect <<
-	/refs    <<>>
 	/buffer  1024 string
 	/break?  true
 	/indent? true
+	/line    1
 	/depth   0
 	/depth++ {/depth depth 1 add def} bind
 	/depth-- {/depth depth 1 sub def} bind
 	/indent  {indent? {depth {(\t) print} repeat} {/indent? true def} ifelse} bind
 	/priv    {0 eq {(-private-)} {( --private-- )} ifelse 8 p} bind
-	/nl      {(\n) print} bind
-	/saveref {dup refs exch refs length put} bind
+	/nl      {(\n) print /line line 1 add def} bind
 	/escape? true
+
+	% Section: Reference tracking
+	/refs <<>>
+	/ref {
+		(Reference to ) 6 p
+		dup type dup /dicttype eq
+			{pop (dictionary)}
+			{16 string cvs dup length 0 exch 4 sub getinterval}
+		ifelse 6 p
+		refs exch get
+		dup 0 lt {( key)} {( value)} ifelse 6 p
+		( on line ) 6 p
+		abs 6 p
+	} bind
+	/saveref {
+		dup
+		{refs {line eq {stop} {pop} ifelse} forall}
+		stopped {refs exch 2 copy get neg put} if
+		refs exch line put
+	} bind
+
 	/char {
 		dup
 		1 string dup 3 -1 roll
@@ -42,11 +62,7 @@ currentpacking true setpacking
 		(\033[0m) print
 	} bind
 	/arraytype {
-		dup refs exch known {
-			(Circular Reference ) 6 p
-			refs exch get
-			6 p
-		} {
+		dup refs exch known {ref} {
 			saveref
 			break? exch
 			/break? true def
@@ -73,11 +89,7 @@ currentpacking true setpacking
 		/break? true def
 	} bind
 	/dicttype {
-		dup refs exch known {
-			(Circular Reference ) 6 p
-			refs exch get
-			6 p
-		} {
+		dup refs exch known {ref} {
 			saveref
 			break? exch
 			(<<) 9 p
@@ -179,6 +191,7 @@ currentpacking true setpacking
 		/refs    <<>> def
 		/break?  true def
 		/indent? true def
+		/line    1    def
 		/depth   0    def
 		/buffer  1024 string def
 	} bind
